@@ -9,6 +9,9 @@ const {
   allCandidates,
 } = require("./controllers/candidateCtrl");
 const { register, login } = require("./auth/auth");
+const { AddFaculty } = require("./controllers/facultieCtrl");
+const { AddDepartment } = require("./controllers/departmentCtrl");
+const { AddUniversity, AddCourse } = require("./controllers/universitiesCtrl");
 
 const app = express();
 
@@ -38,3 +41,9 @@ app.post("/login", login);
 app.post("/add-candidate", register);
 app.post("/search", searchCandidate);
 app.get("/all-candidates", allCandidates);
+
+// api routes for adding departments and faculties
+app.post("/add-faculty", AddFaculty);
+app.post("/add-department", AddDepartment);
+app.post("/add-university", AddUniversity);
+app.post("/add-course", AddCourse);
