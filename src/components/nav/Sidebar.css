@@ -1,0 +1,26 @@
+.sidebar {
+  width: 200px;
+  height: 210%;
+  background-color: #f0f0f0;
+  position: absolute;
+}
+
+.menu {
+  list-style-type: none;
+  padding: 0;
+  text-align: center;
+}
+
+.menu li {
+  margin-bottom: 10px;
+}
+
+.menu li a:hover {
+  background: black;
+  transition: 2s ease-in-out;
+}
+.menu li a {
+  text-decoration: none;
+  display: block;
+  padding: 16px 0;
+}
