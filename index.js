@@ -11,7 +11,17 @@ const {
 const { register, login } = require("./auth/auth");
 const { AddFaculty } = require("./controllers/facultieCtrl");
 const { AddDepartment } = require("./controllers/departmentCtrl");
-const { AddUniversity, AddCourse } = require("./controllers/universitiesCtrl");
+const {
+  AddUniversity,
+  AllUniversity,
+  getOneUniversity,
+  GetOneCourse,
+} = require("./controllers/universitiesCtrl");
+const {
+  AddCourse,
+  GetCourses,
+  GetCourse,
+} = require("./controllers/coursesCtrl");
 
 const app = express();
 
@@ -46,4 +56,11 @@ app.get("/all-candidates", allCandidates);
 app.post("/add-faculty", AddFaculty);
 app.post("/add-department", AddDepartment);
 app.post("/add-university", AddUniversity);
+
 app.post("/add-course", AddCourse);
+app.get("/all-universities", AllUniversity);
+app.get("/get-university", getOneUniversity);
+
+app.get("/get-courses", GetCourses);
+
+app.get("/get-course", GetCourse);
