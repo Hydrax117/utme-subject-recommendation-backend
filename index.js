@@ -7,21 +7,25 @@ var bodyParser = require("body-parser");
 const {
   searchCandidate,
   allCandidates,
+  getOneCandidate,
 } = require("./controllers/candidateCtrl");
 const { register, login } = require("./auth/auth");
-const { AddFaculty } = require("./controllers/facultieCtrl");
-const { AddDepartment } = require("./controllers/departmentCtrl");
+const {
+  AddFaculty,
+  GetFaculties,
+  AddDepartment,
+  GetDepartments,
+} = require("./controllers/facultieCtrl");
 const {
   AddUniversity,
   AllUniversity,
   getOneUniversity,
   GetOneCourse,
-} = require("./controllers/universitiesCtrl");
-const {
   AddCourse,
   GetCourses,
-  GetCourse,
-} = require("./controllers/coursesCtrl");
+  getOneCourse,
+  getOneDepartment,
+} = require("./controllers/universitiesCtrl");
 
 const app = express();
 
@@ -51,6 +55,9 @@ app.post("/login", login);
 app.post("/add-candidate", register);
 app.post("/search", searchCandidate);
 app.get("/all-candidates", allCandidates);
+app.get("/get-candidate", getOneCandidate);
+app.get("/get-department", GetDepartments);
+app.get("/get-onedepartment", getOneDepartment);
 
 // api routes for adding departments and faculties
 app.post("/add-faculty", AddFaculty);
@@ -63,4 +70,6 @@ app.get("/get-university", getOneUniversity);
 
 app.get("/get-courses", GetCourses);
 
-app.get("/get-course", GetCourse);
+app.get("/get-course", getOneCourse);
+
+app.get("/get-faculties", GetFaculties);

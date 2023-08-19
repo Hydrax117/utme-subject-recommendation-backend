@@ -4,7 +4,7 @@ const CoursesSchema = mongoose.Schema({
   title: String,
   faculty: { type: mongoose.Schema.Types.ObjectId, ref: "faculties" },
   university: { type: mongoose.Schema.Types.ObjectId, ref: "universities" },
-  department: String,
+  department: { type: mongoose.Schema.Types.ObjectId, ref: "faculties" },
   recomSubject1: String,
   recomSubject2: String,
   recomSubject3: String,

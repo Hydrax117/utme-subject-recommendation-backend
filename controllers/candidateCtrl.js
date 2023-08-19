@@ -1,5 +1,4 @@
 const CandidateModel = require("../models/Candidate");
-const subjectModel = require("../models/subject");
 
 module.exports.allCandidates = async (req, res) => {
   try {
@@ -35,6 +34,33 @@ module.exports.searchCandidate = async (req, res) => {
         success: false,
         status: 400,
         message: "invalid parameters",
+      });
+    }
+  } catch (error) {
+    return res.json({
+      success: false,
+      status: 400,
+      message: error.message,
+    });
+  }
+};
+
+module.exports.getOneCandidate = async (req, res) => {
+  try {
+    var query = req.query;
+    const candidate = await CandidateModel.findOne(query);
+    if (candidate) {
+      return res.json({
+        success: true,
+        status: 200,
+        message: "user found",
+        data: candidate,
+      });
+    } else {
+      return res.json({
+        success: false,
+        status: 400,
+        message: "user not found",
       });
     }
   } catch (error) {

@@ -12,15 +12,19 @@ const CandidateSchema = mongoose.Schema({
   },
   userType: String,
   password: String,
+  crn: String,
   token: String,
   phone_number: String,
   address: String,
   payment_status: String,
-  selected_subjects: [
-    {
-      subject: { type: mongoose.Schema.Types.ObjectId, ref: "subjects" },
-    },
-  ],
+  instutution: String,
+  coures: String,
+  faculty: String,
+  department: String,
+  recomSubject1: String,
+  recomSubject2: String,
+  recomSubject3: String,
+  recomSubject4: String,
 });
 
 module.exports = mongoose.model("Candidate", CandidateSchema);

@@ -12,7 +12,8 @@ module.exports.login = async (req, res) => {
   try {
     console.log(process.env.TOKEN_KEY);
     const { email, password } = req.body;
-    let user = await CandidateModel.findOne({ email });
+    console.log(email);
+    let user = await CandidateModel.findOne({ email: email });
 
     if (!user) {
       return res.json({
@@ -47,8 +48,7 @@ module.exports.login = async (req, res) => {
 
 module.exports.register = async (req, res) => {
   try {
-    const { email, password, firstName, middleName, lastName, userType } =
-      req.body;
+    const { email, password, firstName, middleName, lastName } = req.body;
     // if any one of the field from email and password is not filled
     if (!email || !password || !firstName || !lastName) {
       return res.json({
@@ -57,15 +57,26 @@ module.exports.register = async (req, res) => {
       });
     }
     req.body.password = await bcrypt.hash(password, 10);
+    console.log(email);
 
-    let user = new CandidateModel(req.body);
-    await user.save();
+    let finduser = await CandidateModel.findOne({ email: email });
+    console.log(finduser);
+    if (finduser) {
+      return res.json({
+        success: false,
+        message: "email has been rigistered already",
+      });
+    } else {
+      let user = new CandidateModel(req.body);
+      user.userType = "STUDENT";
+      await user.save();
 
-    return res.json({
-      success: true,
-      message: "user registered successfully",
-      data: user,
-    });
+      return res.json({
+        success: true,
+        message: "user registered successfully",
+        data: user,
+      });
+    }
   } catch (error) {
     return res.send(error.message);
   }
