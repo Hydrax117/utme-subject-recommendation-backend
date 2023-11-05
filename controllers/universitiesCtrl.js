@@ -1,28 +1,29 @@
-const facultiesModel = require("../models/faculties");
 const universitiesModel = require("../models/universities");
 
 module.exports.AddUniversity = async (req, res) => {
   try {
     // to avoid duplicate entry
-    const title = req.body.name;
-    const t = await universitiesModel.find({ name: title });
+    let data = req.body;
+    let name = req.body.name;
 
-    if (t == "") {
-      let university = new universitiesModel(req.body);
-      university.save();
-      return res.json({
-        success: true,
-        status: 200,
-        message: "university added successfully",
-        data: university,
-      });
-    } else {
+    let f = await universitiesModel.findOne({ name: name });
+    if (f) {
       return res.json({
         success: false,
         status: 400,
-        message: "university already exsit",
+        message: "university already exist",
       });
     }
+
+    let university = await new universitiesModel(data);
+    university.save();
+
+    return res.json({
+      success: true,
+      status: 200,
+      message: "university added dd successfully",
+      data: university,
+    });
   } catch (error) {
     return res.json({
       success: false,
@@ -35,21 +36,43 @@ module.exports.AddUniversity = async (req, res) => {
 module.exports.AddCourse = async (req, res) => {
   try {
     const a = req.query;
-    console.log(a);
     const data = req.body;
-    const ba = await universitiesModel.findOne(a);
+    const foundUniverstiy = await universitiesModel.findOne(a);
+    var exsitingCourse = [];
 
-    for (i = 0; i < ba.courses.length; i++) {
-      if (ba.courses[i].title.toString() === req.body.title.toString()) {
-        return res.json({
-          success: false,
-          message: "course already exist",
-        });
-      } else {
+    // looping through the found unversitiy and the request body to chceck if a course with similar tltle already exsist in the database
+    for (i = 0; i < foundUniverstiy.courses.length; i++) {
+      for (j = 0; j < req.body.length; j++) {
+        if (
+          foundUniverstiy.courses[i].title.toString() ===
+          req.body[j].title.toString()
+        ) {
+          // pushing courses with same title in to the exsisting course array
+          exsitingCourse.push(foundUniverstiy.courses[i].title.toString());
+          return res.json({
+            success: false,
+            message:
+              "the course " + exsitingCourse + " is already in the database",
+          });
+        } else {
+          // to check if the csv file has empty files or does not have the required fields
+          if (
+            !req.body[j].title ||
+            !req.body[j].faculty ||
+            !req.body[j].recomSubject1 ||
+            !req.body[j].recomSubject2 ||
+            !req.body[j].recomSubject3 ||
+            !req.body[j].recomSubject4
+          ) {
+            return res.json({
+              success: true,
+              message: "empty filelds make the csv fomart is correct",
+            });
+          }
+        }
       }
     }
-
-    const b = await universitiesModel.findOneAndUpdate(
+    const newCourse = await universitiesModel.findOneAndUpdate(
       a,
       { $push: { courses: data } },
       { new: true }
@@ -58,7 +81,7 @@ module.exports.AddCourse = async (req, res) => {
     return res.json({
       success: true,
       message: "course pushed in  successfully",
-      data: b,
+      data: newCourse,
     });
   } catch (error) {
     return res.send(error.message);
@@ -67,7 +90,6 @@ module.exports.AddCourse = async (req, res) => {
 module.exports.GetCourses = async (req, res) => {
   const id = req.query.university;
   const faculty = req.query.faculty.toString();
-  const department = req.query.department.toString();
   try {
     const courses = await universitiesModel.findOne({
       _id: id,
@@ -75,10 +97,7 @@ module.exports.GetCourses = async (req, res) => {
     let foundCourses = courses.courses;
     let b = [];
     for (i = 0; i < foundCourses.length; i++) {
-      if (
-        foundCourses[i].faculty.toString() === faculty &&
-        foundCourses[i].department.toString() === department
-      ) {
+      if (foundCourses[i].faculty.toString() === faculty) {
         b.push(foundCourses[i]);
       }
     }
@@ -87,6 +106,23 @@ module.exports.GetCourses = async (req, res) => {
       success: true,
       message: "list of courss",
       data: b,
+    });
+  } catch (error) {
+    return res.send(error.message);
+  }
+};
+
+module.exports.getCourses = async (req, res) => {
+  const id = req.query.university;
+  try {
+    const courses = await universitiesModel.findOne({
+      _id: id,
+    });
+
+    return res.json({
+      success: true,
+      message: "list of courss",
+      data: courses.courses,
     });
   } catch (error) {
     return res.send(error.message);
@@ -133,64 +169,61 @@ module.exports.getOneUniversity = async (req, res) => {
 };
 
 module.exports.getOneCourse = async (req, res) => {
-  const id = req.query;
-  let courseID = req.query._id.toString();
-  let facultyID = req.query.faculty;
-  const departmentID = req.query.dept.toString();
+  try {
+    const id = req.query.courseid.toString();
+    const uni = req.query.university;
+    // let facultyID = req.query.faculty;
 
-  var foundCourse = [];
+    var foundCourse = [];
 
-  const course = await universitiesModel.findOne({
-    courses: { $elemMatch: { $eq: id } },
-  });
+    const university = await universitiesModel.findOne({ _id: uni });
 
-  const faculty = await facultiesModel.findOne({ id: facultyID });
-  let foundDepartment = [];
-  let departmentsArray = faculty.departments;
-  if (faculty) {
-    for (i = 0; i < departmentsArray.length; i++) {
-      if (departmentsArray[i]._id.toString() === departmentID) {
-        foundDepartment = departmentsArray[i];
+    // const faculty = await facultiesModel.findOne({ id: facultyID });
+    // if (faculty) {
+    // }
+    for (i = 0; i < university.courses.length; i++) {
+      if (university.courses[i]._id.toString() === id) {
+        foundCourse = university.courses[i];
       }
     }
-  }
-  for (i = 0; i < course.courses.length; i++) {
-    if (course.courses[i]._id.toString() === courseID) {
-      foundCourse = course.courses[i];
-      foundCourse.faculty = faculty.name;
-      foundCourse.department = foundDepartment.name;
-    }
-  }
 
-  if (course) {
-    return res.json({
-      success: true,
-      message: "books pushed in  successfully",
-      data: foundCourse,
-    });
-  }
-};
-module.exports.getOneDepartment = async (req, res) => {
-  const id = req.query.faculty;
-  const did = req.query.dept.toString();
-  let f = await facultiesModel.findOne({ _id: id });
-  let dept = [];
-  let k = f.departments;
-  if (f) {
-    for (i = 0; i < k.length; i++) {
-      if (k[i]._id.toString() === did) {
-        dept = k[i];
-      }
+    if (university) {
       return res.json({
         success: true,
-        message: "books pushed in  successfully",
-        data: dept,
+        message: "Found Course",
+        data: foundCourse,
+      });
+    } else {
+      return res.json({
+        success: false,
+        message: "Course not found",
       });
     }
-  } else {
-    return res.json({
-      success: false,
-      message: "eerror",
-    });
+  } catch (error) {
+    return res.send(error.message);
   }
 };
+// module.exports.getOneDepartment = async (req, res) => {
+//   const id = req.query.faculty;
+//   const did = req.query.dept.toString();
+//   let f = await facultiesModel.findOne({ _id: id });
+//   let dept = [];
+//   let k = f.departments;
+//   if (f) {
+//     for (i = 0; i < k.length; i++) {
+//       if (k[i]._id.toString() === did) {
+//         dept = k[i];
+//       }
+//       return res.json({
+//         success: true,
+//         message: "books pushed in  successfully",
+//         data: dept,
+//       });
+//     }
+//   } else {
+//     return res.json({
+//       success: false,
+//       message: "eerror",
+//     });
+//   }
+// };

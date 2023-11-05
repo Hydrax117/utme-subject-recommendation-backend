@@ -8,24 +8,25 @@ const {
   searchCandidate,
   allCandidates,
   getOneCandidate,
+  OnSave,
 } = require("./controllers/candidateCtrl");
 const { register, login } = require("./auth/auth");
-const {
-  AddFaculty,
-  GetFaculties,
-  AddDepartment,
-  GetDepartments,
-} = require("./controllers/facultieCtrl");
 const {
   AddUniversity,
   AllUniversity,
   getOneUniversity,
-  GetOneCourse,
   AddCourse,
   GetCourses,
   getOneCourse,
-  getOneDepartment,
+  getCourses,
 } = require("./controllers/universitiesCtrl");
+const {
+  addState,
+  addLgas,
+  allStates,
+  getAllLgas,
+} = require("./controllers/stateCtrl");
+const { adminLogin, adminRegister } = require("./controllers/adminCtrl");
 
 const app = express();
 
@@ -39,6 +40,8 @@ dotenv.config();
 app.listen(process.env.PORT, () => {
   console.log("server started at http://localhost:" + process.env.PORT);
 });
+
+// conection to database
 mongoose.set("strictQuery", true);
 mongoose.connect(process.env.DB_URI, {
   useNewUrlParser: true,
@@ -51,25 +54,29 @@ db.once("open", () => console.log("connected to the database!"));
 app.get("/", (req, res) => {
   res.send("kasu/18/csc/1024");
 });
+app.post("/api/add-state", addState);
+app.post("/api/add-lga", addLgas);
+app.get("/api/all-states", allStates);
+app.get("/api/all-lgas", getAllLgas);
+
 app.post("/login", login);
 app.post("/add-candidate", register);
 app.post("/search", searchCandidate);
 app.get("/all-candidates", allCandidates);
 app.get("/get-candidate", getOneCandidate);
-app.get("/get-department", GetDepartments);
-app.get("/get-onedepartment", getOneDepartment);
 
 // api routes for adding departments and faculties
-app.post("/add-faculty", AddFaculty);
-app.post("/add-department", AddDepartment);
 app.post("/add-university", AddUniversity);
 
 app.post("/add-course", AddCourse);
 app.get("/all-universities", AllUniversity);
 app.get("/get-university", getOneUniversity);
+app.post("/save", OnSave);
 
 app.get("/get-courses", GetCourses);
+app.get("/student/get-courses", getCourses);
 
 app.get("/get-course", getOneCourse);
 
-app.get("/get-faculties", GetFaculties);
+app.post("/admin/login", adminLogin);
+app.post("/admin/register", adminRegister);

@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const CandidateModel = require("../models/Candidate");
+const statesModel = require("../models/states");
 const JWT_SECRET_KEY = process.env.TOKEN_KEY;
 
 function generateAuthToken(data) {
@@ -57,7 +58,8 @@ module.exports.register = async (req, res) => {
       });
     }
     req.body.password = await bcrypt.hash(password, 10);
-    console.log(email);
+    let state = req.body.state;
+    let findState = await statesModel.findOne({ _id: state });
 
     let finduser = await CandidateModel.findOne({ email: email });
     console.log(finduser);
@@ -69,6 +71,7 @@ module.exports.register = async (req, res) => {
     } else {
       let user = new CandidateModel(req.body);
       user.userType = "STUDENT";
+      user.state = findState.name;
       await user.save();
 
       return res.json({
