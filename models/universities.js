@@ -6,12 +6,12 @@ const UniversitiesSchema = mongoose.Schema({
   state: String,
   courses: [
     {
-      title: { type: String, required: true, unique: true },
-      faculty: { type: String, required: true },
-      recomSubject1: { type: String, required: true, unique: true },
-      recomSubject2: { type: String, required: true, unique: true },
-      recomSubject3: { type: String, required: true, unique: true },
-      recomSubject4: { type: String, required: true, unique: true },
+      title: { type: String },
+      faculty: { type: String },
+      recomSubject1: { type: String },
+      recomSubject2: { type: String },
+      recomSubject3: { type: String },
+      recomSubject4: { type: String },
     },
   ],
 });

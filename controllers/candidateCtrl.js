@@ -78,7 +78,7 @@ module.exports.OnSave = async (req, res) => {
   let data = req.body;
   let uni = req.body.institution;
   let u = await universitiesModel.findOne({ _id: uni });
-  let unii = u.institution;
+  let unii = u.name;
   let address = u.address;
 
   const chars =

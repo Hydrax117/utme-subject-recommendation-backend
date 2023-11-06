@@ -19,6 +19,8 @@ const {
   GetCourses,
   getOneCourse,
   getCourses,
+  deleteUniversity,
+  deleteCourse,
 } = require("./controllers/universitiesCtrl");
 const {
   addState,
@@ -80,3 +82,6 @@ app.get("/get-course", getOneCourse);
 
 app.post("/admin/login", adminLogin);
 app.post("/admin/register", adminRegister);
+
+app.delete("/delete-university", deleteUniversity);
+app.delete("/delete-course", deleteCourse);

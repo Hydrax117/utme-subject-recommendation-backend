@@ -89,23 +89,23 @@ module.exports.AddCourse = async (req, res) => {
 };
 module.exports.GetCourses = async (req, res) => {
   const id = req.query.university;
-  const faculty = req.query.faculty.toString();
   try {
     const courses = await universitiesModel.findOne({
       _id: id,
     });
     let foundCourses = courses.courses;
-    let b = [];
-    for (i = 0; i < foundCourses.length; i++) {
-      if (foundCourses[i].faculty.toString() === faculty) {
-        b.push(foundCourses[i]);
-      }
-    }
+
+    var itemsPerPage = 8;
+    var page = parseInt(req.query.page) || 1;
+    var startIndex = (page - 1) * itemsPerPage;
+    var endIndex = page * itemsPerPage;
+    var items = foundCourses.slice(startIndex, endIndex);
 
     return res.json({
       success: true,
       message: "list of courss",
-      data: b,
+      data: items,
+      totalPages: Math.ceil(foundCourses.length / itemsPerPage),
     });
   } catch (error) {
     return res.send(error.message);
@@ -227,3 +227,37 @@ module.exports.getOneCourse = async (req, res) => {
 //     });
 //   }
 // };
+
+module.exports.deleteUniversity = async (req, res) => {
+  try {
+    const id = req.query;
+
+    await universitiesModel.findOneAndDelete({ id });
+
+    return res.json({
+      success: true,
+      message: "university deleted successfully",
+    });
+  } catch (error) {
+    return res.status(400).send(error.message);
+  }
+};
+
+module.exports.deleteCourse = async (req, res) => {
+  try {
+    const { courseId, universityId } = req.query;
+    universitiesModel.findByIdAndUpdate(
+      universityId,
+      { $pull: { courses: { _id: courseId } } },
+      (err, result) => {
+        if (err) {
+          res.status(500).json({ error: "Failed to delete item" });
+        } else {
+          res.json({ message: "Item deleted successfully" });
+        }
+      }
+    );
+  } catch (error) {
+    return res.status(400).send(error.message);
+  }
+};
