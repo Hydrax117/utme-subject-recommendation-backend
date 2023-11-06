@@ -126,3 +126,25 @@ module.exports.OnSave = async (req, res) => {
     return value;
   }
 };
+
+module.exports.getCrn = async (req, res) => {
+  try {
+    let crn = req.query;
+    let candidate = await CandidateModel.findOne(crn).select(
+      "-password -token"
+    );
+    if (candidate) {
+      return res.json({
+        message: "success",
+        data: candidate,
+        status: 200,
+      });
+    } else {
+      return res.json({
+        message: "invalid crn",
+        status: 400,
+        success: false,
+      });
+    }
+  } catch (error) {}
+};

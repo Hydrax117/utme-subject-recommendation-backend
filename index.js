@@ -9,6 +9,7 @@ const {
   allCandidates,
   getOneCandidate,
   OnSave,
+  getCrn,
 } = require("./controllers/candidateCtrl");
 const { register, login } = require("./auth/auth");
 const {
@@ -66,6 +67,7 @@ app.post("/add-candidate", register);
 app.post("/search", searchCandidate);
 app.get("/all-candidates", allCandidates);
 app.get("/get-candidate", getOneCandidate);
+app.get("/crn", getCrn);
 
 // api routes for adding departments and faculties
 app.post("/add-university", AddUniversity);
