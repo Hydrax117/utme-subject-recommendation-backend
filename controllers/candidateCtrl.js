@@ -148,3 +148,26 @@ module.exports.getCrn = async (req, res) => {
     }
   } catch (error) {}
 };
+
+module.exports.updateImage = async (req, res) => {
+  try {
+    const query = req.query;
+    const data = req.body;
+    const b = await CandidateModel.findOneAndUpdate(query, data, { new: true });
+    if (b) {
+      return res.json({
+        succes: true,
+        message: "successful",
+        data: b,
+      });
+    } else {
+      return res.json({
+        success: false,
+        status: 400,
+        message: "candidate not found",
+      });
+    }
+  } catch (error) {
+    return res.send(error.message);
+  }
+};

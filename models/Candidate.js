@@ -27,6 +27,7 @@ const CandidateSchema = mongoose.Schema({
   recomSubject2: String,
   recomSubject3: String,
   recomSubject4: String,
+  image: String,
 });
 
 module.exports = mongoose.model("Candidate", CandidateSchema);
